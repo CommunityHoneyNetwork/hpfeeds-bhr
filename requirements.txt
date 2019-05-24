@@ -1,0 +1,4 @@
+gevent==1.1.1
+pymongo==2.7.2
+IPy
+bhr-client

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+trap "exit 130" SIGINT
+trap "exit 137" SIGKILL
+trap "exit 143" SIGTERM
+
+source {{ sysconfig_dir }}/hpfeeds-bhr
+export $PYTHONPATH
+
+
+
+cd {{ hpfeeds_bhr_dir }}
+if [[ ! -f ./hpfeeds-bhr.cfg ]]
+then
+    IDENT="hpfeeds-bhr-${RANDOM}"
+    SECRET=`python -c 'import uuid;print str(uuid.uuid4()).replace("-","")'`
+    CHANNELS='amun.events,conpot.events,thug.events,beeswarm.hive,dionaea.capture,dionaea.connections,thug.files,beeswarn.feeder,cuckoo.analysis,kippo.sessions,cowrie.sessions,glastopf.events,glastopf.files,mwbinary.dionaea.sensorunique,snort.alerts,wordpot.events,p0f.events,suricata.events,shockpot.events,elastichoney.events,rdphoney.sessions,uhp.events'
+
+    cp ./hpfeeds-bhr.cfg.template ./hpfeeds-bhr.cfg
+
+    sed -i "s/ident *=.*/ident = ${IDENT}/g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
+    sed -i "s/secret *=.*/secret = ${SECRET}/g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
+    sed -i "s/hp_host *=.*/hp_host = ${HPFEEDS_HOST}/g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
+    sed -i "s/hp_port *=.*/hp_port = ${HPFEEDS_PORT}/g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
+    sed -i "s/channels *=.*/channels = ${CHANNELS}/g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
+    sed -i "s%bhr_host *=.*%bhr_host = ${BHR_HOST}%g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
+    sed -i "s%bhr_tags *=.*%bhr_tags = ${BHR_TAGS}%g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
+    sed -i "s/bhr_token *=.*/bhr_token = ${BHR_TOKEN}/g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
+    sed -i "s/bhr_verify_ssl *=.*/bhr_verify_ssl = ${BHR_VERIFY_SSL}/g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
+    sed -i "s/include_hp_tags *=.*/include_hp_tags = ${INCLUDE_HP_TAGS:-False}/g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
+    sed -i "s%ignore_cidr *=.*%ignore_cidr = ${IGNORE_CIDR}%g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
+
+    # Generate config file for hpfeeds broker and register
+    cd {{ hpfeeds_dir }}/hpfeeds/broker/
+    python {{ hpfeeds_dir }}/hpfeeds/broker/generateconfig.py unattended --mongo_host ${MONGODB_HOST} --mongo_port ${MONGODB_PORT}
+    python {{ hpfeeds_dir }}/hpfeeds/broker/add_user.py "$IDENT" "$SECRET" "" "$CHANNELS"
+fi
+
+cd {{ hpfeeds_bhr_dir }}
+echo "Starting hpfeeds bhr..."
+
+exec /usr/bin/env python {{ hpfeeds_bhr_dir }}/hpfeeds-bhr/feedhandler.py {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
