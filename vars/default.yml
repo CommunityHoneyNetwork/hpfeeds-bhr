@@ -6,12 +6,10 @@
 
   pip_executable: pip2
 
-  hpfeeds_cif_logdir: /var/log/hpfeeds_bhr
+  hpfeeds_bhr_logdir: /var/log/hpfeeds_bhr
 
-  hpfeeds_cif_dir: /opt
+  hpfeeds_bhr_dir: /opt
 
   hpfeeds_repo: https://github.com/CommunityHoneyNetwork/hpfeeds.git
-  ### NEED TO UPDATE THIS TO MASTER
-  ### ONCE MASTER HAS THE FORK MERGED
   hpfeeds_version: master
   hpfeeds_dir: /srv
