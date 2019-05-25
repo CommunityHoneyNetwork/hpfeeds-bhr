@@ -35,8 +35,7 @@ def handle_message(msg, host, token, tags, ssl, include_hp_tags=False):
     logging.debug('Found signature: {}'.format(msg['signature']))
 
     app = msg['app']
-    msg_tags = tags
-
+    msg_tags = []
     if include_hp_tags and msg['tags']:
         msg_tags = msg['tags']
 
@@ -51,7 +50,7 @@ def handle_message(msg, host, token, tags, ssl, include_hp_tags=False):
         data = {
             'indicator': indicator,
             'source' : app,
-            'why' : msg_tags,
+            'why' : tags + msg_tags,
             'duration' : 3600,
             'ssl_no_verify': bhr_ssl
         }
@@ -61,9 +60,13 @@ def handle_message(msg, host, token, tags, ssl, include_hp_tags=False):
 
 
 def submit_to_bhr(data, host, token):
-    logging.debug('Initializing BHR instance to host={}, with ssl={}'.format(host, ssl))
+    logging.debug('Initializing BHR instance to host={}, with ssl_no_verify={}'.format(host, data['ssl_no_verify']))
 
-    bhr = bhr_login(host=host, token=token, ident='chn-bhr')
+    try:
+        bhr = bhr_login(host=host, token=token, ident='chn-bhr')
+    except Exception as e:
+        logging.debug('Exception when submitting block to BHR: {}'.format(e))
+        logging.debug('Further, bhr returned: {}'.format(bhr))
 
     logging.info('Submitting indicator: {0}'.format(data))
     try:
