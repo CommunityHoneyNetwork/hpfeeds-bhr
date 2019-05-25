@@ -35,7 +35,7 @@ def handle_message(msg, host, token, tags, ssl, include_hp_tags=False):
     logging.debug('Found signature: {}'.format(msg['signature']))
 
     app = msg['app']
-    msg_tags = [tags]
+    msg_tags = tags
 
     if include_hp_tags and msg['tags']:
         msg_tags = msg['tags']
@@ -121,6 +121,7 @@ def main():
 
     processor = processors.HpfeedsMessageProcessor(ignore_cidr_list=ignore_cidr_l)
     logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host,port,ident,secret))
+    logging.debug('Configuring BHR with: Host: {}, Tags: {}, SSL_Verify: {}, Token: {}'.format(bhr_host, bhr_tags, bhr_verify_ssl, bhr_token))
     try:
         hpc = hpfeeds.new(host, port, ident, secret)
     except hpfeeds.FeedException as e:
