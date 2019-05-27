@@ -50,7 +50,7 @@ def handle_message(msg, host, token, tags, ssl, include_hp_tags=False):
         data = {
             'indicator': indicator,
             'source' : app,
-            'why' : tags + msg_tags,
+            'why' : str(tags + msg_tags),
             'duration' : 3600,
             'ssl_no_verify': bhr_ssl
         }
