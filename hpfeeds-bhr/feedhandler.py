@@ -1,13 +1,12 @@
 import os
 import sys
-import json
-from datetime import datetime
 import hpfeeds
 from ConfigParser import ConfigParser
 import processors
 import logging
 from IPy import IP
 from bhr_client.rest import login as bhr_login
+import requests.exceptions
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -39,6 +38,8 @@ def handle_message(msg, host, token, tags, ssl, include_hp_tags=False):
     if include_hp_tags and msg['tags']:
         msg_tags = msg['tags']
 
+    why = ','.join(tags + msg_tags)[:-1]
+
     if ssl:
         bhr_ssl = False
     else:
@@ -50,7 +51,7 @@ def handle_message(msg, host, token, tags, ssl, include_hp_tags=False):
         data = {
             'indicator': indicator,
             'source' : app,
-            'why' : str(tags + msg_tags),
+            'why' : why,
             'duration' : 3600,
             'ssl_no_verify': bhr_ssl
         }
@@ -73,8 +74,11 @@ def submit_to_bhr(data, host, token):
         r = bhr.block(cidr=data['indicator'],source=data['source'],why=data['why'],duration=data['duration'])
         logging.debug('Indicator submitted with id {}'.format(r))
         return True
-    except Exception as e:
-        logging.error('Error submitting indicator: {0}'.format(repr(e)))
+    except (requests.exceptions.HTTPError,Exception) as e:
+        if isinstance(e,requests.exceptions.HTTPError):
+            logging.warn('Indicator {} is on the system safelist and was NOT blocked!'.format(data['indicator']))
+        else:
+            logging.error('Error submitting indicator: {0}'.format(repr(e)))
         return False
 
 
