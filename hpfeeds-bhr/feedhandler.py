@@ -7,16 +7,40 @@ import logging
 from IPy import IP
 from bhr_client.rest import login as bhr_login
 import requests.exceptions
+import redis
 
 logging.basicConfig(level=logging.DEBUG)
 
 
+class RedisCache(object):
+    """
+    Implement a simple cache using Redis.
+    """
+    def __init__(self, host='redis', port=6379, db=1):
+        # This code will have implication of no more than one instance of BHR
+        # In case of multiples, false cache hits will result due to db selected
+        self.r = redis.Redis(host=host, port=port, db=db)
+        self.expire_t = 60
+
+    def iscached(self,ip):
+        a = self.r.get(ip)
+        logging.debug('Checked for {} in cache and received: {}'.format(ip, a))
+        if a:
+            return True
+        else:
+            return False
+
+    def setcache(self,ip):
+        a = self.r.set(name=ip, value=0, ex=self.expire_t)
+        logging.debug('Sent {} to cache and received: {}'.format(ip,a))
+
+
 def parse_ignore_cidr_option(cidrlist):
-    '''
+    """
     Given a comma-seperated list of CIDR addresses, split them and validate they're valid CIDR notation
     :param cidrlist: string representing a comma seperated list of CIDR addresses
     :return: a list containing IPy.IP objects representing the ignore_cidr addresses
-    '''
+    """
     l = list()
     for c in cidrlist.split(','):
         try:
@@ -28,8 +52,11 @@ def parse_ignore_cidr_option(cidrlist):
     return l
 
 
+def handle_message(msg, host, token, tags, ssl, cache, include_hp_tags=False):
 
-def handle_message(msg, host, token, tags, ssl, include_hp_tags=False):
+    if cache.iscached(msg['src_ip']):
+        logging.info('Skipped submitting {} due to cache hit'.format(msg['src_ip']))
+        return
 
     logging.debug('Found signature: {}'.format(msg['signature']))
 
@@ -55,12 +82,12 @@ def handle_message(msg, host, token, tags, ssl, include_hp_tags=False):
             'duration' : 3600,
             'ssl_no_verify': bhr_ssl
         }
-        submit_to_bhr(data, host, token)
+        submit_to_bhr(data, host, token, cache)
 
     return
 
 
-def submit_to_bhr(data, host, token):
+def submit_to_bhr(data, host, token, cache):
     logging.debug('Initializing BHR instance to host={}, with ssl_no_verify={}'.format(host, data['ssl_no_verify']))
 
     try:
@@ -73,10 +100,12 @@ def submit_to_bhr(data, host, token):
     try:
         r = bhr.block(cidr=data['indicator'],source=data['source'],why=data['why'],duration=data['duration'])
         logging.debug('Indicator submitted with id {}'.format(r))
+        cache.setcache(data['indicator'])
         return True
     except (requests.exceptions.HTTPError,Exception) as e:
         if isinstance(e,requests.exceptions.HTTPError):
             logging.warn('Indicator {} is on the system safelist and was NOT blocked!'.format(data['indicator']))
+            cache.setcache(data['indicator'])
         else:
             logging.error('Error submitting indicator: {0}'.format(repr(e)))
         return False
@@ -127,6 +156,7 @@ def main():
     bhr_verify_ssl = config['bhr_verify_ssl']
 
     processor = processors.HpfeedsMessageProcessor(ignore_cidr_list=ignore_cidr_l)
+    cache = RedisCache()
     logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host,port,ident,secret))
     logging.debug('Configuring BHR with: Host: {}, Tags: {}, SSL_Verify: {}, Token: {}'.format(bhr_host, bhr_tags, bhr_verify_ssl, bhr_token))
     try:
@@ -137,7 +167,7 @@ def main():
 
     def on_message(identifier, channel, payload):
         for msg in processor.process(identifier, channel, payload, ignore_errors=True):
-            handle_message(msg, bhr_host, bhr_token, bhr_tags, bhr_verify_ssl, include_hp_tags)
+            handle_message(msg, bhr_host, bhr_token, bhr_tags, bhr_verify_ssl, cache, include_hp_tags)
 
     def on_error(payload):
         sys.stderr.write("Handling error.")

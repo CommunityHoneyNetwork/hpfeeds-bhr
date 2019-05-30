@@ -709,6 +709,8 @@ class HpfeedsMessageProcessor(object):
         self.ignore_cidr_list=ignore_cidr_list
 
     def is_ignore_addr(self,ip):
+        if len(self.ignore_cidr_list) == 0:
+            return False
         try:
             checkip = IP(ip)
             for c in self.ignore_cidr_list:
