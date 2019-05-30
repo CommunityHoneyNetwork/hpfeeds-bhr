@@ -11,19 +11,20 @@ import redis
 
 logging.basicConfig(level=logging.DEBUG)
 
+
 class RedisCache(object):
-    '''
+    """
     Implement a simple cache using Redis.
-    '''
-    def __init__(self):
+    """
+    def __init__(self, host='redis', port=6379, db=1):
         # This code will have implication of no more than one instance of BHR
         # In case of multiples, false cache hits will result due to db selected
-        self.r = redis.Redis(host='redis', port=6379, db=1)
+        self.r = redis.Redis(host=host, port=port, db=db)
         self.expire_t = 60
 
     def iscached(self,ip):
         a = self.r.get(ip)
-        logging.debug('Checked for {} in cache and received: {}'.format(ip,a))
+        logging.debug('Checked for {} in cache and received: {}'.format(ip, a))
         if a:
             return True
         else:
@@ -33,12 +34,13 @@ class RedisCache(object):
         a = self.r.set(name=ip, value=0, ex=self.expire_t)
         logging.debug('Sent {} to cache and received: {}'.format(ip,a))
 
+
 def parse_ignore_cidr_option(cidrlist):
-    '''
+    """
     Given a comma-seperated list of CIDR addresses, split them and validate they're valid CIDR notation
     :param cidrlist: string representing a comma seperated list of CIDR addresses
     :return: a list containing IPy.IP objects representing the ignore_cidr addresses
-    '''
+    """
     l = list()
     for c in cidrlist.split(','):
         try:
@@ -48,7 +50,6 @@ def parse_ignore_cidr_option(cidrlist):
         except ValueError as e:
             logging.warn('Received invalid CIDR in ignore_cidr: {}'.format(e))
     return l
-
 
 
 def handle_message(msg, host, token, tags, ssl, cache, include_hp_tags=False):
