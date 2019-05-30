@@ -18,8 +18,8 @@ class RedisCache(object):
     def __init__(self):
         # This code will have implication of no more than one instance of BHR
         # In case of multiples, false cache hits will result due to db selected
-        r = redis.Redis(host='redis', port=6379, db=1)
-        expire_t = 60
+        self.r = redis.Redis(host='redis', port=6379, db=1)
+        self.expire_t = 60
 
     def iscached(self,ip):
         a = self.r.get(ip)
