@@ -23,13 +23,15 @@ class RedisCache(object):
 
     def iscached(self,ip):
         a = self.r.get(ip)
+        logging.debug('Checked for {} in cache and received: {}'.format(ip,a))
         if a:
             return True
         else:
             return False
 
     def setcache(self,ip):
-        self.r.set(name=ip, value=0, ex=self.expire_t)
+        a = self.r.set(name=ip, value=0, ex=self.expire_t)
+        logging.debug('Sent {} to cache and received: {}'.format(ip,a))
 
 def parse_ignore_cidr_option(cidrlist):
     '''
