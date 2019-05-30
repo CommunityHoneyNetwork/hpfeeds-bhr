@@ -104,6 +104,7 @@ def submit_to_bhr(data, host, token, cache):
     except (requests.exceptions.HTTPError,Exception) as e:
         if isinstance(e,requests.exceptions.HTTPError):
             logging.warn('Indicator {} is on the system safelist and was NOT blocked!'.format(data['indicator']))
+            cache.setcache(data['indicator'])
         else:
             logging.error('Error submitting indicator: {0}'.format(repr(e)))
         return False
