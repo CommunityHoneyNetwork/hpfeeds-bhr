@@ -54,7 +54,7 @@ def parse_ignore_cidr_option(cidrlist):
 def handle_message(msg, host, token, tags, ssl, cache, include_hp_tags=False):
 
     if cache.iscached(msg['src_ip']):
-        logging.debug('Skipped submitting {} due to cache hit'.format(msg['src_ip']))
+        logging.info('Skipped submitting {} due to cache hit'.format(msg['src_ip']))
         return
 
     logging.debug('Found signature: {}'.format(msg['signature']))
