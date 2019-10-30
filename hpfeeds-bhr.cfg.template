@@ -12,3 +12,4 @@ bhr_host = http://bhr
 bhr_token = bologna
 bhr_verify_ssl = False
 bhr_tags = ''
+bhr_cache_db = 1

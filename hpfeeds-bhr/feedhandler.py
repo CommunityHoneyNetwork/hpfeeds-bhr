@@ -133,6 +133,8 @@ def parse_config(config_file):
     config['bhr_tags'] = parser.get('bhr', 'bhr_tags').split(',')
     config['bhr_verify_ssl'] = parser.getboolean('bhr', 'bhr_verify_ssl')
 
+    config['bhr_cache_db'] = parser.getint('bhr', 'bhr_cache_db').split(',')
+
     logging.debug('Parsed config: {0}'.format(repr(config)))
     return config
 
@@ -155,8 +157,10 @@ def main():
     bhr_tags = config['bhr_tags']
     bhr_verify_ssl = config['bhr_verify_ssl']
 
+    bhr_cache_db = config['bhr_cache_db']
+
     processor = processors.HpfeedsMessageProcessor(ignore_cidr_list=ignore_cidr_l)
-    cache = RedisCache()
+    cache = RedisCache(db=bhr_cache_db)
     logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host,port,ident,secret))
     logging.debug('Configuring BHR with: Host: {}, Tags: {}, SSL_Verify: {}, Token: {}'.format(bhr_host, bhr_tags, bhr_verify_ssl, bhr_token))
     try:
