@@ -133,7 +133,7 @@ def parse_config(config_file):
     config['bhr_tags'] = parser.get('bhr', 'bhr_tags').split(',')
     config['bhr_verify_ssl'] = parser.getboolean('bhr', 'bhr_verify_ssl')
 
-    config['bhr_cache_db'] = parser.getint('bhr', 'bhr_cache_db').split(',')
+    config['bhr_cache_db'] = parser.getint('bhr', 'bhr_cache_db')
 
     logging.debug('Parsed config: {0}'.format(repr(config)))
     return config
