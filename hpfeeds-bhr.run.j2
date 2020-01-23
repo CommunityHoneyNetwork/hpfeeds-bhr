@@ -41,6 +41,7 @@ then
     sed -i "s/include_hp_tags *=.*/include_hp_tags = ${INCLUDE_HP_TAGS:-False}/g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
     sed -i "s%ignore_cidr *=.*%ignore_cidr = ${IGNORE_CIDR}%g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
     sed -i "s/bhr_cache_db *=.*/bhr_cache_db = ${BHR_CACHE_DB:-1}/g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
+    sed -i "s/bhr_cache_expire *=.*/bhr_cache_expire = ${BHR_CACHE_EXPIRE:-300}/g" {{ hpfeeds_bhr_dir }}/hpfeeds-bhr.cfg
 
 fi
 
