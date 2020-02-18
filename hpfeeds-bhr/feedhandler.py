@@ -1,7 +1,7 @@
 import os
 import sys
 import hpfeeds
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 import processors
 import logging
 from IPy import IP

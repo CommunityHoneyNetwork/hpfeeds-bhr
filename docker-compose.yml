@@ -1,14 +1,12 @@
 version: '2'
 services:
   redis:
-    image: stingar/redis:1.7
-    volumes:
-      - ./storage/redis:/var/lib/redis:z
+    image: stingar/redis:1.8
   hpfeeds-bhr:
     build:
       context: .
-    image: hpfeeds-bhr:ubuntu
-    volumes:
-      - ./hpfeeds-bhr.sysconfig:/etc/default/hpfeeds-bhr:z
+    image: hpfeeds-bhr:latest
+    env_file:
+      - hpfeeds-bhr.env
     links:
       - redis:redis

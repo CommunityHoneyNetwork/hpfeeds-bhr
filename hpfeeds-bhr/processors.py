@@ -1,6 +1,6 @@
 import json
 import traceback
-import urlparse
+from urllib.parse import urlparse
 import socket
 import hashlib
 import re
