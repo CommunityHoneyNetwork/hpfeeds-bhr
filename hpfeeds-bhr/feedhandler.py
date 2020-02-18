@@ -166,7 +166,7 @@ def main():
     logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host,port,ident,secret))
     logging.debug('Configuring BHR with: Host: {}, Tags: {}, SSL_Verify: {}, Token: {}'.format(bhr_host, bhr_tags, bhr_verify_ssl, bhr_token))
     try:
-        hpc = hpfeeds.new(host, port, ident, secret)
+        hpc = hpfeeds.client.new(host, port, ident, secret)
     except hpfeeds.FeedException as e:
         logging.error('Experienced FeedException: {0}'.format(repr(e)))
         return 1

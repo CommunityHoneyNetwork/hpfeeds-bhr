@@ -544,7 +544,7 @@ def shockpot_event(identifier, payload):
             kwargs.update(m.groupdict())
 
     try:
-        p = urlparse.urlparse(dec.url)
+        p = urlparse(dec.url)
         host = p.netloc.split(':')[0]
         socket.inet_aton(host)
         dest_ip = host
