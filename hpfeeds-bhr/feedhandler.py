@@ -147,9 +147,9 @@ def main():
     config = parse_config(sys.argv[1])
     host = config['hpf_host']
     port = config['hpf_port']
-    channels = [c.encode('utf-8') for c in config['hpf_feeds']]
-    ident = config['hpf_ident'].encode('utf-8')
-    secret = config['hpf_secret'].encode('utf-8')
+    channels = [c for c in config['hpf_feeds']]
+    ident = config['hpf_ident']
+    secret = config['hpf_secret']
     include_hp_tags = config['include_hp_tags']
     ignore_cidr_l = parse_ignore_cidr_option(config['ignore_cidr'])
 
