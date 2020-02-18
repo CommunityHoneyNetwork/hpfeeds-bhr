@@ -2,6 +2,8 @@ version: '2'
 services:
   redis:
     image: stingar/redis:1.8
+  mongodb:
+    image: stingar/mongodb:1.8
   hpfeeds-bhr:
     build:
       context: .
@@ -10,3 +12,4 @@ services:
       - hpfeeds-bhr.env
     links:
       - redis:redis
+      - mongodb:mongodb
