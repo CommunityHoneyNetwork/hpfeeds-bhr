@@ -172,7 +172,7 @@ def main():
         return 1
 
     def on_message(identifier, channel, payload):
-        for msg in processor.process(identifier, channel, payload, ignore_errors=True):
+        for msg in processor.process(identifier, channel, payload.decode('utf-8'), ignore_errors=True):
             handle_message(msg, bhr_host, bhr_token, bhr_tags, bhr_verify_ssl, cache, include_hp_tags)
 
     def on_error(payload):
