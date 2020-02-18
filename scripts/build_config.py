@@ -22,10 +22,11 @@ def main():
 
     BHR_HOST = os.environ.get("BHR_HOST", "")
     BHR_TOKEN = os.environ.get("BHR_TOKEN", "")
-    BHR_VERIFY_SSL = os.environ.get("BHR_VERIFY_SSL", "")
+    BHR_VERIFY_SSL = os.environ.get("BHR_VERIFY_SSL", "true")
     IGNORE_CIDR = os.environ.get("IGNORE_CIDR", "false")
     BHR_CACHE_DB = os.environ.get("BHR_CACHE_DB", "2")
     BHR_CACHE_EXPIRE = os.environ.get("BHR_CACHE_EXPIRE", "300")
+    BHR_TAGS = os.environ.get("BHR_TAGS", "")
 
     if IDENT:
         ident = IDENT
@@ -53,6 +54,7 @@ def main():
     config['bhr']['bhr_verify_ssl'] = BHR_VERIFY_SSL
     config['bhr']['bhr_cache_db'] = BHR_CACHE_DB
     config['bhr']['bhr_cache_expire'] = BHR_CACHE_EXPIRE
+    config['bhr']['bhr_tags'] = BHR_TAGS
 
     create_user(host=MONGODB_HOST, port=int(MONGODB_PORT), owner=HPFEEDS_OWNER,
                 ident=ident, secret=secret, publish="", subscribe=CHANNELS)

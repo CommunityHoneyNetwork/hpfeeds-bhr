@@ -48,7 +48,7 @@ def parse_ignore_cidr_option(cidrlist):
             i = IP(s)
             l.append(i)
         except ValueError as e:
-            logging.warn('Received invalid CIDR in ignore_cidr: {}'.format(e))
+            logging.warning('Received invalid CIDR in ignore_cidr: {}'.format(e))
     return l
 
 
@@ -104,7 +104,7 @@ def submit_to_bhr(data, host, token, cache):
         return True
     except (requests.exceptions.HTTPError,Exception) as e:
         if isinstance(e,requests.exceptions.HTTPError):
-            logging.warn('Indicator {} is on the system safelist and was NOT blocked!'.format(data['indicator']))
+            logging.warning('Indicator {} is on the system safelist and was NOT blocked!'.format(data['indicator']))
             cache.setcache(data['indicator'])
         else:
             logging.error('Error submitting indicator: {0}'.format(repr(e)))
