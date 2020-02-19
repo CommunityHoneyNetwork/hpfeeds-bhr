@@ -65,7 +65,9 @@ def handle_message(msg, host, token, tags, ssl, cache, include_hp_tags=False):
     if include_hp_tags and msg['tags']:
         msg_tags = msg['tags']
 
-    why = ','.join(tags + msg_tags)[:-1]
+    why = ','.join(tags + msg_tags)
+    if why[-1] == ',':
+        why = why[:-1]
 
     if ssl:
         bhr_ssl = False
@@ -82,7 +84,7 @@ def handle_message(msg, host, token, tags, ssl, cache, include_hp_tags=False):
             'duration' : 3600,
             'ssl_no_verify': bhr_ssl
         }
-        logging.debug('Sending data to BHR: {}'.format(data))
+        logging.debug('Sending to BHR: Data {} | Host {} | Token {} | Cache {}'.format(data, host, token, cache))
         submit_to_bhr(data, host, token, cache)
 
     return
