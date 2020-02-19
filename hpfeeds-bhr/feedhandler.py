@@ -70,7 +70,7 @@ def handle_message(msg, bhr, cache, include_hp_tags=False):
                 msg_tags = msg['tags']
 
             why = ','.join(msg_tags)
-            if why[-1] == ',':
+            if why and why[-1] == ',':
                 why = why[:-1]
 
             indicator = msg['src_ip']
