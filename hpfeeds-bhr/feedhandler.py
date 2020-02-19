@@ -148,10 +148,12 @@ def main():
         bhr_password = os.environ.get("BHR_PASSWORD")
         bhr_ssl_no_verify = bool(os.environ.get("BHR_SSL_NO_VERIFY"))
         bhr_timeout = int(os.environ.get("BHR_TIMEOUT", 3600))
+        # logging.debug('Found BHR environment: Host {} | Ident {} | Token {} | Username {} | Password {} | Verify {} | Timeout {}'.format(bhr_host, bhr_ident, bhr_token,bhr_username, bhr_password,bhr_ssl_no_verify,bhr_timeout))
+        # bhr = bhr_login(bhr_host, bhr_token, bhr_username, bhr_password, bhr_ident, bhr_ssl_no_verify, bhr_timeout)
         logging.debug(
-            'Found BHR environment: Host {} | Ident {} | Token {} | Username {} | Password {} | Verify {} | Timeout {}'.format(
+            'Found BHR environment: Host {} | Token {} | Username {} | Password {} | Verify {} | Timeout {}'.format(
                 bhr_host, bhr_ident, bhr_token, bhr_username, bhr_password, bhr_ssl_no_verify, bhr_timeout))
-        bhr = bhr_login(bhr_host, bhr_token, bhr_username, bhr_password, bhr_ident, bhr_ssl_no_verify, bhr_timeout)
+        bhr = bhr_login(bhr_host, bhr_token, bhr_username, bhr_password, bhr_ssl_no_verify, bhr_timeout)
         logging.debug('Configured BHR: {}'.format(repr(bhr)))
     except Exception as e:
         logging.error('Logging into BHR failed: {}'.format(repr(e)))
