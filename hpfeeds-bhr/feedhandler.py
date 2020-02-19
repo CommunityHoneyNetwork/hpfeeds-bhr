@@ -82,7 +82,7 @@ def handle_message(msg, host, token, tags, ssl, cache, include_hp_tags=False):
             'duration' : 3600,
             'ssl_no_verify': bhr_ssl
         }
-        logging.debug('Sending to BHR: Data {} | Host {} | Token {} | Cache {} '.format(data, host, token, cache))
+        logging.debug('Sending data to BHR: {}'.format(data))
         submit_to_bhr(data, host, token, cache)
 
     return
