@@ -96,7 +96,7 @@ def submit_to_bhr(data, host, token, cache):
     try:
         bhr = bhr_login(host=host, token=token, ident='chn-bhr')
     except Exception as e:
-        logging.debug('Exception when submitting block to BHR: {} BHR_REQUEST: {}'.format(e, bhr))
+        logging.debug('Exception when submitting block to BHR: {}'.format(e))
 
     logging.info('Submitting indicator: {0}'.format(data))
     try:
