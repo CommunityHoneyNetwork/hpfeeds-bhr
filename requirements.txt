@@ -2,3 +2,4 @@ pymongo
 IPy
 bhr-client
 redis
+click
