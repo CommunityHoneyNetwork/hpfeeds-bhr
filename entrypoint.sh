@@ -12,13 +12,9 @@ main () {
   python3 /opt/scripts/build_config.py
   if [[ $? -ne 0 ]]
   then
-      echo "Authorization failed; please verify BHR_HOST and BHR_TOKEN, then restart the container."
-      echo "BHR_HOST=${BHR_HOST}"
-      echo "BHR_TOKEN=${BHR_TOKEN}"
+      echo "Config build failed; verify config and then restart the container."
       sleep 120
       exit 1
-  else
-      echo "Successfully pinged BHR host with token"
   fi
   cat /opt/hpfeeds-bhr.cfg
   python3 /opt/hpfeeds-bhr/feedhandler.py /opt/hpfeeds-bhr.cfg

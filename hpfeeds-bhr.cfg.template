@@ -8,9 +8,5 @@ include_hp_tags = true
 ignore_cidr = 10.0.0.0/8
 
 [bhr]
-bhr_host = http://bhr
-bhr_token = bologna
-bhr_verify_ssl = False
-bhr_tags =
 bhr_cache_db = 1
 bhr_cache_expire = 300

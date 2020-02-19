@@ -20,13 +20,9 @@ def main():
                               "amun.events,conpot.events,thug.events,beeswarm.hive,dionaea.capture,dionaea.connections,thug.files,beeswarm.feeder,cuckoo.analysis,kippo.sessions,cowrie.sessions,glastopf.events,glastopf.files,mwbinary.dionaea.sensorunique,snort.alerts,wordpot.events,p0f.events,suricata.events,shockpot.events,elastichoney.events,rdphoney.sessions,uhp.events")
     INCLUDE_HP_TAGS = os.environ.get("INCLUDE_HP_TAGS", "false")
 
-    BHR_HOST = os.environ.get("BHR_HOST", "")
-    BHR_TOKEN = os.environ.get("BHR_TOKEN", "")
-    BHR_VERIFY_SSL = os.environ.get("BHR_VERIFY_SSL", "true")
     IGNORE_CIDR = os.environ.get("IGNORE_CIDR", "false")
     BHR_CACHE_DB = os.environ.get("BHR_CACHE_DB", "2")
     BHR_CACHE_EXPIRE = os.environ.get("BHR_CACHE_EXPIRE", "300")
-    BHR_TAGS = os.environ.get("BHR_TAGS", "")
 
     if IDENT:
         ident = IDENT
@@ -49,12 +45,8 @@ def main():
     config['hpfeeds']['ignore_cidr'] = IGNORE_CIDR
     config['hpfeeds']['include_hp_tags'] = INCLUDE_HP_TAGS
 
-    config['bhr']['bhr_host'] = BHR_HOST
-    config['bhr']['bhr_token'] = BHR_TOKEN
-    config['bhr']['bhr_verify_ssl'] = BHR_VERIFY_SSL
     config['bhr']['bhr_cache_db'] = BHR_CACHE_DB
     config['bhr']['bhr_cache_expire'] = BHR_CACHE_EXPIRE
-    config['bhr']['bhr_tags'] = BHR_TAGS
 
     create_user(host=MONGODB_HOST, port=int(MONGODB_PORT), owner=HPFEEDS_OWNER,
                 ident=ident, secret=secret, publish="", subscribe=CHANNELS)
