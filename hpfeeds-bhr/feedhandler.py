@@ -93,8 +93,7 @@ def submit_to_bhr(data, host, token, cache):
     try:
         bhr = bhr_login(host=host, token=token, ident='chn-bhr')
     except Exception as e:
-        logging.debug('Exception when submitting block to BHR: {}'.format(e))
-        logging.debug('Further, bhr returned: {}'.format(bhr))
+        logging.debug('Exception when submitting block to BHR: {} BHR_REQUEST: {}'.format(e, bhr))
 
     logging.info('Submitting indicator: {0}'.format(data))
     try:
@@ -155,16 +154,18 @@ def main():
 
     bhr_token = config['bhr_token']
     bhr_host = config['bhr_host']
-    bhr_tags = config['bhr_tags']
     bhr_verify_ssl = config['bhr_verify_ssl']
-
     bhr_cache_db = config['bhr_cache_db']
     bhr_cache_expire = config['bhr_cache_expire']
 
+    bhr_tags = ','.join(config['bhr_tags'])
+
     processor = processors.HpfeedsMessageProcessor(ignore_cidr_list=ignore_cidr_l)
     cache = RedisCache(db=bhr_cache_db, expire=bhr_cache_expire)
-    logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host,port,ident,secret))
-    logging.debug('Configuring BHR with: Host: {}, Tags: {}, SSL_Verify: {}, Token: {}'.format(bhr_host, bhr_tags, bhr_verify_ssl, bhr_token))
+    logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host, port, ident, secret))
+    logging.debug(
+        'Configuring BHR with: Host: {}, Tags: {}, SSL_Verify: {}, Token: {}'.format(bhr_host, bhr_tags, bhr_verify_ssl,
+                                                                                     bhr_token))
     try:
         hpc = hpfeeds.client.new(host, port, ident, secret)
     except hpfeeds.FeedException as e:
