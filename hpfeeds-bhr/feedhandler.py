@@ -159,6 +159,7 @@ def main():
     bhr_cache_db = config['bhr_cache_db']
     bhr_cache_expire = config['bhr_cache_expire']
 
+    bhr_tags = config['bhr_tags']
     processor = processors.HpfeedsMessageProcessor(ignore_cidr_list=ignore_cidr_l)
     cache = RedisCache(db=bhr_cache_db, expire=bhr_cache_expire)
     logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host, port, ident, secret))
