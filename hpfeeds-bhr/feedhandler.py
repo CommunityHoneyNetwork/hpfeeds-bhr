@@ -141,14 +141,17 @@ def main():
 
     logging.debug('Configuring BHR')
     try:
-        host = os.environ["BHR_HOST"]
-        ident = os.environ.get("BHR_IDENT")
-        token = os.environ.get("BHR_TOKEN")
-        username = os.environ.get("BHR_USERNAME")
-        password = os.environ.get("BHR_PASSWORD")
-        ssl_no_verify = bool(os.environ.get("BHR_SSL_NO_VERIFY"))
-        timeout = int(os.environ.get("BHR_TIMEOUT", 3600))
-        bhr = bhr_login(host, token, username, password, ident, ssl_no_verify, timeout)
+        bhr_host = os.environ["BHR_HOST"]
+        bhr_ident = os.environ.get("BHR_IDENT")
+        bhr_token = os.environ.get("BHR_TOKEN")
+        bhr_username = os.environ.get("BHR_USERNAME")
+        bhr_password = os.environ.get("BHR_PASSWORD")
+        bhr_ssl_no_verify = bool(os.environ.get("BHR_SSL_NO_VERIFY"))
+        bhr_timeout = int(os.environ.get("BHR_TIMEOUT", 3600))
+        logging.debug(
+            'Found BHR environment: Host {} | Ident {} | Token {} | Username {} | Password {} | Verify {} | Timeout {}'.format(
+                bhr_host, bhr_ident, bhr_token, bhr_username, bhr_password, bhr_ssl_no_verify, bhr_timeout))
+        bhr = bhr_login(bhr_host, bhr_token, bhr_username, bhr_password, bhr_ident, bhr_ssl_no_verify, bhr_timeout)
         logging.debug('Configured BHR: {}'.format(repr(bhr)))
     except Exception as e:
         logging.error('Logging into BHR failed: {}'.format(repr(e)))
