@@ -63,17 +63,21 @@ def handle_message(msg, bhr, cache, include_hp_tags=False):
     if msg['signature'] == 'Connection to Honeypot':
         logging.debug('Found signature: {}'.format(msg['signature']))
 
-        app = msg['app']
-        msg_tags = []
-        if include_hp_tags and msg['tags']:
-            msg_tags = msg['tags']
+        try:
+            app = msg['app']
+            msg_tags = []
+            if include_hp_tags and msg['tags']:
+                msg_tags = msg['tags']
 
-        why = ','.join(msg_tags)
-        if why[-1] == ',':
-            why = why[:-1]
+            why = ','.join(msg_tags)
+            if why[-1] == ',':
+                why = why[:-1]
 
-        indicator = msg['src_ip']
-        duration = 3600
+            indicator = msg['src_ip']
+            duration = 3600
+        except Exception as e:
+            logging.error(e)
+
         logging.info('Submitting indicator: {0}'.format(indicator))
 
         try:
