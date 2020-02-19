@@ -53,23 +53,25 @@ def parse_ignore_cidr_option(cidrlist):
 
 
 def handle_message(msg, bhr, cache, include_hp_tags=False):
+
     logging.debug('Handling message: {}'.format(msg))
+
     if cache.iscached(msg['src_ip']):
         logging.info('Skipped submitting {} due to cache hit'.format(msg['src_ip']))
         return
 
-    logging.debug('Found signature: {}'.format(msg['signature']))
-
-    app = msg['app']
-    msg_tags = []
-    if include_hp_tags and msg['tags']:
-        msg_tags = msg['tags']
-
-    why = ','.join(msg_tags)
-    if why[-1] == ',':
-        why = why[:-1]
-
     if msg['signature'] == 'Connection to Honeypot':
+        logging.debug('Found signature: {}'.format(msg['signature']))
+
+        app = msg['app']
+        msg_tags = []
+        if include_hp_tags and msg['tags']:
+            msg_tags = msg['tags']
+
+        why = ','.join(msg_tags)
+        if why[-1] == ',':
+            why = why[:-1]
+
         indicator = msg['src_ip']
         duration = 3600
         logging.info('Submitting indicator: {0}'.format(indicator))
@@ -136,6 +138,7 @@ def main():
     logging.debug('Configuring BHR')
     try:
         bhr = bhr_login()
+        logging.debug('Configured BHR: {}'.format(repr(bhr)))
     except Exception as e:
         logging.error('Logging into BHR failed: {}'.format(repr(e)))
 

@@ -749,6 +749,7 @@ class HpfeedsMessageProcessor(object):
                             logging.debug('Ignored submission for {}: ignore_cidr_list: {}'.format(src_ip,self.ignore_cidr_list))
                             continue
                         else:
+                            logging.debug('src_ip NOT on ignore list: {}'.format(src_ip))
                             results.append(msg)
                 else:
                     src_ip = message.get('src_ip')
