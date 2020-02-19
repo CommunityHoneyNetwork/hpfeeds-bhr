@@ -157,7 +157,7 @@ def main():
         logging.debug('Configured BHR: {}'.format(repr(bhr)))
     except Exception as e:
         logging.error('Logging into BHR failed: {}'.format(repr(e)))
-
+        return 1
     try:
         logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host, port, ident, secret))
         hpc = hpfeeds.client.new(host, port, ident, secret)
