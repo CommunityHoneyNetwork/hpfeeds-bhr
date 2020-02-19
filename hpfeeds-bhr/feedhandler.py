@@ -53,7 +53,7 @@ def parse_ignore_cidr_option(cidrlist):
 
 
 def handle_message(msg, host, token, tags, ssl, cache, include_hp_tags=False):
-
+    logging.debug('Handling message: {}'.format(msg))
     if cache.iscached(msg['src_ip']):
         logging.info('Skipped submitting {} due to cache hit'.format(msg['src_ip']))
         return
@@ -82,6 +82,7 @@ def handle_message(msg, host, token, tags, ssl, cache, include_hp_tags=False):
             'duration' : 3600,
             'ssl_no_verify': bhr_ssl
         }
+        logging.debug('Sending to BHR: Data {} | Host {} | Token {} | Cache {} '.format(data, host, token, cache))
         submit_to_bhr(data, host, token, cache)
 
     return
@@ -157,8 +158,6 @@ def main():
     bhr_verify_ssl = config['bhr_verify_ssl']
     bhr_cache_db = config['bhr_cache_db']
     bhr_cache_expire = config['bhr_cache_expire']
-
-    bhr_tags = ','.join(config['bhr_tags'])
 
     processor = processors.HpfeedsMessageProcessor(ignore_cidr_list=ignore_cidr_l)
     cache = RedisCache(db=bhr_cache_db, expire=bhr_cache_expire)
