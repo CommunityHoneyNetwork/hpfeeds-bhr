@@ -5,7 +5,7 @@ from configparser import ConfigParser
 import processors
 import logging
 from IPy import IP
-from bhr_client.rest import login as bhr_login
+from bhr_client.rest import login_from_env as bhr_login
 import requests.exceptions
 import redis
 
@@ -162,8 +162,8 @@ def main():
         logger.debug(
             'Found BHR environment: Host {} | Token {} | Username {} | Password {} | Verify {} | Timeout {}'.format(
                 bhr_host, bhr_ident, bhr_token, bhr_username, bhr_password, bhr_ssl_no_verify, bhr_timeout))
-        bhr = bhr_login(bhr_host, bhr_token)
-        logger.info('Configured BHR: {}'.format(repr(bhr)))
+        bhr = bhr_login()
+        logger.info('Configured BHR: {}'.format(repr(bhr.__dict__)))
     except Exception as e:
         logger.error('Logging into BHR failed: {}'.format(repr(e)))
         return 1
