@@ -20,7 +20,8 @@ def main():
 
     logger.info("Running build_config.py")
     for VAR in ["MONGODB_HOST", "MONGODB_PORT", "HPFEEDS_HOST", "HPFEEDS_PORT", "HPFEEDS_OWNER", "IDENT", "SECRET",
-                "CHANNELS", "INCLUDE_HP_TAGS", "IGNORE_CIDR", "BHR_CACHE_DB", "BHR_CACHE_EXPIRE"]:
+                "CHANNELS", "INCLUDE_HP_TAGS", "IGNORE_CIDR", "BHR_HOST", "BHR_TOKEN", "BHR_SSL_NO_VERIFY", "BHR_IDENT",
+                "BHR_CACHE_DB", "BHR_TIMEOUT", "BHR_CACHE_EXPIRE"]:
         logger.debug('From environment, {} is set to: {}'.format(VAR, os.environ.get(VAR)))
 
     MONGODB_HOST = os.environ.get("MONGODB_HOST", "mongodb")

@@ -86,6 +86,8 @@ def handle_message(msg, bhr, cache, include_hp_tags=False):
         logger.info('Submitting indicator: {0}'.format(indicator))
 
         try:
+            logger.debug(
+                'Submitting with: cidr={}, source={}, why={}, duration={}'.format(indicator, app, why, duration))
             r = bhr.block(cidr=indicator, source=app, why=why, duration=duration)
             logger.debug('Indicator submitted with id {}'.format(r))
             cache.setcache(indicator)
