@@ -32,7 +32,7 @@ def main():
     INCLUDE_HP_TAGS = os.environ.get("INCLUDE_HP_TAGS", "false")
     IGNORE_CIDR = os.environ.get("IGNORE_CIDR", "false")
 
-    BHR_HOST = os.environ["BHR_HOST", "localhost"]
+    BHR_HOST = os.environ.get("BHR_HOST", "localhost")
     BHR_IDENT = os.environ.get("BHR_IDENT", "CHN")
     BHR_TOKEN = os.environ.get("BHR_TOKEN")
     BHR_USERNAME = os.environ.get("BHR_USERNAME")
