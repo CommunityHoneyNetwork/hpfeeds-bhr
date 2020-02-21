@@ -130,7 +130,7 @@ def parse_config(config_file):
     config['bhr_password'] = parser.get('bhr', 'bhr_password')
     config['bhr_ssl_no_verify'] = parser.getboolean('bhr', 'bhr_ssl_no_verify')
     config['bhr_timeout'] = parser.getint('bhr', 'bhr_timeout')
-
+    config['bhr_duration'] = parser.getint('bhr', 'bhr_duration')
     config['bhr_cache_db'] = parser.getint('bhr', 'bhr_cache_db')
     config['bhr_cache_expire'] = parser.getint('bhr', 'bhr_cache_expire')
 
