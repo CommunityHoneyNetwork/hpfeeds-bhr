@@ -93,6 +93,7 @@ def handle_message(msg, bhr, cache, include_hp_tags=False):
         except (requests.exceptions.HTTPError, Exception) as e:
             if isinstance(e, requests.exceptions.HTTPError):
                 logger.warning('Indicator {} is on the system safelist and was NOT blocked!'.format(indicator))
+                logger.debug('HTTPError was: {}'.format(e.__dict__))
                 cache.setcache(indicator)
             else:
                 logger.error('Error submitting indicator: {0}'.format(repr(e)))
