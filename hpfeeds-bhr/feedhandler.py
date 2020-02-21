@@ -164,6 +164,7 @@ def main():
                 bhr_host, bhr_ident, bhr_token, bhr_username, bhr_password, bhr_ssl_no_verify, bhr_timeout))
         bhr = bhr_login()
         logger.info('Configured BHR: {}'.format(repr(bhr.__dict__)))
+        logger.debug('Configured BHR Sessions: {}'.format(repr(bhr.s.__dict__)))
     except Exception as e:
         logger.error('Logging into BHR failed: {}'.format(repr(e)))
         return 1
