@@ -6,12 +6,22 @@ import logging
 import configparser
 from hpfeeds.add_user import create_user
 
+LOG_FORMAT = '%(asctime)s - %(levelname)s - %(name)s[%(lineno)s][%(filename)s] - %(message)s'
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter(LOG_FORMAT))
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
+
 
 def main():
-    logging.info("Running build_config.py")
+    if os.environ.get('DEBUG').upper() == 'TRUE':
+        logger.setLevel(logger.DEBUG)
+
+    logger.info("Running build_config.py")
     for VAR in ["MONGODB_HOST", "MONGODB_PORT", "HPFEEDS_HOST", "HPFEEDS_PORT", "HPFEEDS_OWNER", "IDENT", "SECRET",
                 "CHANNELS", "INCLUDE_HP_TAGS", "IGNORE_CIDR", "BHR_CACHE_DB", "BHR_CACHE_EXPIRE"]:
-        logging.debug('From environment, {} is set to: {}'.format(VAR, os.environ.get(VAR)))
+        logger.debug('From environment, {} is set to: {}'.format(VAR, os.environ.get(VAR)))
 
     MONGODB_HOST = os.environ.get("MONGODB_HOST", "mongodb")
     MONGODB_PORT = os.environ.get("MONGODB_PORT", "27017")
@@ -55,7 +65,7 @@ def main():
     create_user(host=MONGODB_HOST, port=int(MONGODB_PORT), owner=HPFEEDS_OWNER,
                 ident=ident, secret=secret, publish="", subscribe=CHANNELS)
 
-    print("Writing config...")
+    logger.info("Writing config...")
 
     with open("/opt/hpfeeds-bhr.cfg", 'w') as config_file:
         config.write(config_file)

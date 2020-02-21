@@ -129,6 +129,9 @@ def main():
     if len(sys.argv) < 2:
         return 1
 
+    if os.environ.get('DEBUG').upper() == 'TRUE':
+        logger.setLevel(logging.DEBUG)
+
     config = parse_config(sys.argv[1])
     host = config['hpf_host']
     port = config['hpf_port']
@@ -143,9 +146,9 @@ def main():
 
     processor = processors.HpfeedsMessageProcessor(ignore_cidr_list=ignore_cidr_l)
     cache = RedisCache(db=bhr_cache_db, expire=bhr_cache_expire)
-    logger.debug('Set up Redis cache with database {} and expire time of {}'.format(bhr_cache_db, bhr_cache_expire))
+    logger.info('Set up Redis cache with database {} and expire time of {}'.format(bhr_cache_db, bhr_cache_expire))
 
-    logger.debug('Configuring BHR')
+    logger.info('Configuring BHR')
     try:
         bhr_host = os.environ["BHR_HOST"]
         bhr_ident = os.environ.get("BHR_IDENT")
@@ -160,12 +163,12 @@ def main():
             'Found BHR environment: Host {} | Token {} | Username {} | Password {} | Verify {} | Timeout {}'.format(
                 bhr_host, bhr_ident, bhr_token, bhr_username, bhr_password, bhr_ssl_no_verify, bhr_timeout))
         bhr = bhr_login(bhr_host, bhr_token)
-        logger.debug('Configured BHR: {}'.format(repr(bhr)))
+        logger.info('Configured BHR: {}'.format(repr(bhr)))
     except Exception as e:
         logger.error('Logging into BHR failed: {}'.format(repr(e)))
         return 1
     try:
-        logger.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host, port, ident, secret))
+        logger.info('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host, port, ident, secret))
         hpc = hpfeeds.client.new(host, port, ident, secret)
     except hpfeeds.FeedException as e:
         logger.error('Experienced FeedException: {0}'.format(repr(e)))
@@ -176,7 +179,7 @@ def main():
             handle_message(msg, bhr, cache, include_hp_tags)
 
     def on_error(payload):
-        logger.debug("Handling error: {}".format(payload))
+        logger.error("Handling error: {}".format(payload))
         hpc.stop()
 
     hpc.subscribe(channels)
