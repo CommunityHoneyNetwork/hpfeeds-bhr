@@ -70,7 +70,7 @@ def handle_message(msg, bhr, cache, include_hp_tags=False):
 
         try:
             app = msg['app']
-            msg_tags = []
+            msg_tags = ['honeypot']
             if include_hp_tags and msg['tags']:
                 msg_tags = msg['tags']
 
