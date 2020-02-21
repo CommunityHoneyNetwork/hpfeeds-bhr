@@ -25,8 +25,7 @@ pep8:
 
 build_container:
   stage: build
-  when:
-    - always
+  when: always
   tags:
     - container_scanning
   services:
