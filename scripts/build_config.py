@@ -38,7 +38,8 @@ def main():
     BHR_USERNAME = os.environ.get("BHR_USERNAME", "")
     BHR_PASSWORD = os.environ.get("BHR_PASSWORD", "")
     BHR_SSL_NO_VERIFY = os.environ.get("BHR_SSL_NO_VERIFY", "False")
-    BHR_TIMEOUT = os.environ.get("BHR_TIMEOUT", "3600")
+    BHR_TIMEOUT = os.environ.get("BHR_TIMEOUT", "30")
+    BHR_DURATION = os.environ.get("BHR_DURATION", "3600")
     BHR_CACHE_DB = os.environ.get("BHR_CACHE_DB", "2")
     BHR_CACHE_EXPIRE = os.environ.get("BHR_CACHE_EXPIRE", "300")
 
@@ -70,7 +71,7 @@ def main():
     config['bhr']['bhr_password'] = BHR_PASSWORD
     config['bhr']['bhr_ssl_no_verify'] = BHR_SSL_NO_VERIFY
     config['bhr']['bhr_timeout'] = BHR_TIMEOUT
-
+    config['bhr']['bhr_duration'] = BHR_DURATION
     config['bhr']['bhr_cache_db'] = BHR_CACHE_DB
     config['bhr']['bhr_cache_expire'] = BHR_CACHE_EXPIRE
 

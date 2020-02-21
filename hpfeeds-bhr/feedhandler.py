@@ -58,7 +58,7 @@ def parse_ignore_cidr_option(cidrlist):
     return l
 
 
-def handle_message(msg, bhr, cache, include_hp_tags=False):
+def handle_message(msg, bhr, cache, include_hp_tags=False, duration=3600):
     logger.debug('Handling message: {}'.format(msg))
 
     if cache.iscached(msg['src_ip']):
@@ -79,7 +79,6 @@ def handle_message(msg, bhr, cache, include_hp_tags=False):
                 why = why[:-1]
 
             indicator = msg['src_ip']
-            duration = 3600
         except Exception as e:
             logger.error(e)
 
@@ -91,7 +90,9 @@ def handle_message(msg, bhr, cache, include_hp_tags=False):
             r = bhr.block(cidr=indicator, source=app, why=why, duration=duration)
             logger.debug('Indicator submitted with id {}'.format(r))
             cache.setcache(indicator)
-            logger.info('Successfully sent {} to BHR and cached for {} seconds'.format(indicator, cache.expire_t))
+            logger.info(
+                'Successfully sent {} to BHR for {} seconds and cached for {} seconds'.format(indicator, duration,
+                                                                                              cache.expire_t))
             return True
         except (requests.exceptions.HTTPError, Exception) as e:
             if isinstance(e, requests.exceptions.HTTPError):
@@ -160,7 +161,7 @@ def main():
     bhr_password = config['bhr_password']
     bhr_ssl_no_verify = config['bhr_ssl_no_verify']
     bhr_timeout = config['bhr_timeout']
-
+    bhr_duration = config['bhr_duration']
     bhr_cache_db = config['bhr_cache_db']
     bhr_cache_expire = config['bhr_cache_expire']
 
@@ -187,7 +188,7 @@ def main():
 
     def on_message(identifier, channel, payload):
         for msg in processor.process(identifier, channel, payload.decode('utf-8'), ignore_errors=True):
-            handle_message(msg, bhr, cache, include_hp_tags)
+            handle_message(msg, bhr, cache, include_hp_tags, duration=bhr_duration)
 
     def on_error(payload):
         logger.error("Handling error: {}".format(payload))
