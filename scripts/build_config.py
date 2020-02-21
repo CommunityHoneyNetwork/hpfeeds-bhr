@@ -16,7 +16,7 @@ logger.addHandler(handler)
 
 def main():
     if os.environ.get('DEBUG').upper() == 'TRUE':
-        logger.setLevel(logger.DEBUG)
+        logger.setLevel(logging.DEBUG)
 
     logger.info("Running build_config.py")
     for VAR in ["MONGODB_HOST", "MONGODB_PORT", "HPFEEDS_HOST", "HPFEEDS_PORT", "HPFEEDS_OWNER", "IDENT", "SECRET",
