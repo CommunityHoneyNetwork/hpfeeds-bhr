@@ -9,13 +9,19 @@ from bhr_client.rest import login as bhr_login
 import requests.exceptions
 import redis
 
-logging.basicConfig(level=logging.DEBUG)
+LOG_FORMAT = '%(asctime)s - %(levelname)s - %(name)s[%(lineno)s][%(filename)s] - %(message)s'
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter(LOG_FORMAT))
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
 
 
 class RedisCache(object):
     """
     Implement a simple cache using Redis.
     """
+
     def __init__(self, host='redis', port=6379, db=1, expire=300):
         # This code will have implication of no more than one instance of BHR
         # In case of multiples, false cache hits will result due to db selected
@@ -24,7 +30,7 @@ class RedisCache(object):
 
     def iscached(self,ip):
         a = self.r.get(ip)
-        logging.debug('Checked for {} in cache and received: {}'.format(ip, a))
+        logger.debug('Checked for {} in cache and received: {}'.format(ip, a))
         if a:
             return True
         else:
@@ -32,7 +38,7 @@ class RedisCache(object):
 
     def setcache(self,ip):
         a = self.r.set(name=ip, value=0, ex=self.expire_t)
-        logging.debug('Sent {} to cache and received: {}'.format(ip,a))
+        logger.debug('Sent {} to cache and received: {}'.format(ip, a))
 
 
 def parse_ignore_cidr_option(cidrlist):
@@ -48,20 +54,19 @@ def parse_ignore_cidr_option(cidrlist):
             i = IP(s)
             l.append(i)
         except ValueError as e:
-            logging.warning('Received invalid CIDR in ignore_cidr: {}'.format(e))
+            logger.warning('Received invalid CIDR in ignore_cidr: {}'.format(e))
     return l
 
 
 def handle_message(msg, bhr, cache, include_hp_tags=False):
-
-    logging.debug('Handling message: {}'.format(msg))
+    logger.debug('Handling message: {}'.format(msg))
 
     if cache.iscached(msg['src_ip']):
-        logging.info('Skipped submitting {} due to cache hit'.format(msg['src_ip']))
+        logger.info('Skipped submitting {} due to cache hit'.format(msg['src_ip']))
         return
 
     if msg['signature'] == 'Connection to Honeypot':
-        logging.debug('Found signature: {}'.format(msg['signature']))
+        logger.debug('Found signature: {}'.format(msg['signature']))
 
         try:
             app = msg['app']
@@ -76,21 +81,21 @@ def handle_message(msg, bhr, cache, include_hp_tags=False):
             indicator = msg['src_ip']
             duration = 3600
         except Exception as e:
-            logging.error(e)
+            logger.error(e)
 
-        logging.info('Submitting indicator: {0}'.format(indicator))
+        logger.info('Submitting indicator: {0}'.format(indicator))
 
         try:
             r = bhr.block(cidr=indicator, source=app, why=why, duration=duration)
-            logging.debug('Indicator submitted with id {}'.format(r))
+            logger.debug('Indicator submitted with id {}'.format(r))
             cache.setcache(indicator)
             return True
         except (requests.exceptions.HTTPError, Exception) as e:
             if isinstance(e, requests.exceptions.HTTPError):
-                logging.warning('Indicator {} is on the system safelist and was NOT blocked!'.format(indicator))
+                logger.warning('Indicator {} is on the system safelist and was NOT blocked!'.format(indicator))
                 cache.setcache(indicator)
             else:
-                logging.error('Error submitting indicator: {0}'.format(repr(e)))
+                logger.error('Error submitting indicator: {0}'.format(repr(e)))
             return False
 
     return
@@ -116,7 +121,7 @@ def parse_config(config_file):
     config['bhr_cache_db'] = parser.getint('bhr', 'bhr_cache_db')
     config['bhr_cache_expire'] = parser.getint('bhr', 'bhr_cache_expire')
 
-    logging.debug('Parsed config: {0}'.format(repr(config)))
+    logger.debug('Parsed config: {0}'.format(repr(config)))
     return config
 
 
@@ -138,8 +143,9 @@ def main():
 
     processor = processors.HpfeedsMessageProcessor(ignore_cidr_list=ignore_cidr_l)
     cache = RedisCache(db=bhr_cache_db, expire=bhr_cache_expire)
+    logger.debug('Set up Redis cache with database {} and expire time of {}'.format(bhr_cache_db, bhr_cache_expire))
 
-    logging.debug('Configuring BHR')
+    logger.debug('Configuring BHR')
     try:
         bhr_host = os.environ["BHR_HOST"]
         bhr_ident = os.environ.get("BHR_IDENT")
@@ -148,21 +154,21 @@ def main():
         bhr_password = os.environ.get("BHR_PASSWORD")
         bhr_ssl_no_verify = bool(os.environ.get("BHR_SSL_NO_VERIFY"))
         bhr_timeout = int(os.environ.get("BHR_TIMEOUT", 3600))
-        # logging.debug('Found BHR environment: Host {} | Ident {} | Token {} | Username {} | Password {} | Verify {} | Timeout {}'.format(bhr_host, bhr_ident, bhr_token,bhr_username, bhr_password,bhr_ssl_no_verify,bhr_timeout))
+        # logger.debug('Found BHR environment: Host {} | Ident {} | Token {} | Username {} | Password {} | Verify {} | Timeout {}'.format(bhr_host, bhr_ident, bhr_token,bhr_username, bhr_password,bhr_ssl_no_verify,bhr_timeout))
         # bhr = bhr_login(bhr_host, bhr_token, bhr_username, bhr_password, bhr_ident, bhr_ssl_no_verify, bhr_timeout)
-        logging.debug(
+        logger.debug(
             'Found BHR environment: Host {} | Token {} | Username {} | Password {} | Verify {} | Timeout {}'.format(
                 bhr_host, bhr_ident, bhr_token, bhr_username, bhr_password, bhr_ssl_no_verify, bhr_timeout))
         bhr = bhr_login(bhr_host, bhr_token)
-        logging.debug('Configured BHR: {}'.format(repr(bhr)))
+        logger.debug('Configured BHR: {}'.format(repr(bhr)))
     except Exception as e:
-        logging.error('Logging into BHR failed: {}'.format(repr(e)))
+        logger.error('Logging into BHR failed: {}'.format(repr(e)))
         return 1
     try:
-        logging.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host, port, ident, secret))
+        logger.debug('Initializing HPFeeds connection with {0}, {1}, {2}, {3}'.format(host, port, ident, secret))
         hpc = hpfeeds.client.new(host, port, ident, secret)
     except hpfeeds.FeedException as e:
-        logging.error('Experienced FeedException: {0}'.format(repr(e)))
+        logger.error('Experienced FeedException: {0}'.format(repr(e)))
         return 1
 
     def on_message(identifier, channel, payload):
@@ -170,7 +176,7 @@ def main():
             handle_message(msg, bhr, cache, include_hp_tags)
 
     def on_error(payload):
-        logging.debug("Handling error: {}".format(payload))
+        logger.debug("Handling error: {}".format(payload))
         hpc.stop()
 
     hpc.subscribe(channels)

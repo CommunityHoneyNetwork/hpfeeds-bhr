@@ -9,6 +9,10 @@ from hpfeeds.add_user import create_user
 
 def main():
     logging.info("Running build_config.py")
+    for VAR in ["MONGODB_HOST", "MONGODB_PORT", "HPFEEDS_HOST", "HPFEEDS_PORT", "HPFEEDS_OWNER", "IDENT", "SECRET",
+                "CHANNELS", "INCLUDE_HP_TAGS", "IGNORE_CIDR", "BHR_CACHE_DB", "BHR_CACHE_EXPIRE"]:
+        logging.debug('From environment, {} is set to: {}'.format(VAR, os.environ.get(VAR)))
+
     MONGODB_HOST = os.environ.get("MONGODB_HOST", "mongodb")
     MONGODB_PORT = os.environ.get("MONGODB_PORT", "27017")
     HPFEEDS_HOST = os.environ.get("HPFEEDS_HOST", "hpfeeds3")
