@@ -32,11 +32,11 @@ def main():
     INCLUDE_HP_TAGS = os.environ.get("INCLUDE_HP_TAGS", "false")
     IGNORE_CIDR = os.environ.get("IGNORE_CIDR", "false")
 
-    BHR_HOST = os.environ.get("BHR_HOST", "localhost")
+    BHR_HOST = os.environ.get("BHR_HOST", None)
     BHR_IDENT = os.environ.get("BHR_IDENT", "CHN")
-    BHR_TOKEN = os.environ.get("BHR_TOKEN")
-    BHR_USERNAME = os.environ.get("BHR_USERNAME")
-    BHR_PASSWORD = os.environ.get("BHR_PASSWORD")
+    BHR_TOKEN = os.environ.get("BHR_TOKEN", None)
+    BHR_USERNAME = os.environ.get("BHR_USERNAME", None)
+    BHR_PASSWORD = os.environ.get("BHR_PASSWORD", None)
     BHR_SSL_NO_VERIFY = os.environ.get("BHR_SSL_NO_VERIFY", "False")
     BHR_TIMEOUT = os.environ.get("BHR_TIMEOUT", "3600")
     BHR_CACHE_DB = os.environ.get("BHR_CACHE_DB", "2")
@@ -65,12 +65,9 @@ def main():
 
     config['bhr']['bhr_host'] = BHR_HOST
     config['bhr']['bhr_ident'] = BHR_IDENT
-    if BHR_TOKEN:
-        config['bhr']['bhr_token'] = BHR_TOKEN
-    if BHR_USERNAME:
-        config['bhr']['bhr_username'] = BHR_USERNAME
-    if BHR_PASSWORD:
-        config['bhr']['bhr_password'] = BHR_PASSWORD
+    config['bhr']['bhr_token'] = BHR_TOKEN
+    config['bhr']['bhr_username'] = BHR_USERNAME
+    config['bhr']['bhr_password'] = BHR_PASSWORD
     config['bhr']['bhr_ssl_no_verify'] = BHR_SSL_NO_VERIFY
     config['bhr']['bhr_timeout'] = BHR_TIMEOUT
 

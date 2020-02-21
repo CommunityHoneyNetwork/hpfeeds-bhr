@@ -170,7 +170,8 @@ def main():
 
     logger.info('Configuring BHR')
     try:
-        bhr = bhr_login(bhr_host, bhr_token, bhr_username, bhr_password, bhr_ident, bhr_ssl_no_verify, bhr_timeout)
+        bhr = bhr_login(host=bhr_host, token=bhr_token, username=bhr_username, password=bhr_password, ident=bhr_ident,
+                        ssl_no_verify=bhr_ssl_no_verify, timeout=bhr_timeout)
         logger.info('Configured BHR: {}'.format(repr(bhr.__dict__)))
         logger.debug('Configured BHR Sessions: {}'.format(repr(bhr.s.__dict__)))
     except Exception as e:
