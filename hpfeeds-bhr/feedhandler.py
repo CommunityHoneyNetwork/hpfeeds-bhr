@@ -170,7 +170,8 @@ def main():
 
     logger.info('Configuring BHR')
     try:
-        bhr = bhr_login(host=bhr_host, token=bhr_token, username=bhr_username, password=bhr_password, ident=bhr_ident,
+        # Don't send ident until bug is fixed in pip package
+        bhr = bhr_login(host=bhr_host, token=bhr_token, username=bhr_username, password=bhr_password,
                         ssl_no_verify=bhr_ssl_no_verify, timeout=bhr_timeout)
         logger.info('Configured BHR: {}'.format(repr(bhr.__dict__)))
         logger.debug('Configured BHR Sessions: {}'.format(repr(bhr.s.__dict__)))
