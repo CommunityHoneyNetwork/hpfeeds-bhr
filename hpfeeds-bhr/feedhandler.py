@@ -5,7 +5,7 @@ from configparser import ConfigParser
 import processors
 import logging
 from IPy import IP
-from bhr_client.rest import login_from_env as bhr_login
+from bhr_client.rest import login as bhr_login
 import requests.exceptions
 import redis
 
@@ -91,6 +91,7 @@ def handle_message(msg, bhr, cache, include_hp_tags=False):
             r = bhr.block(cidr=indicator, source=app, why=why, duration=duration)
             logger.debug('Indicator submitted with id {}'.format(r))
             cache.setcache(indicator)
+            logger.info('Successfully sent {} to BHR and cached for {} seconds'.format(indicator, cache.expire_t))
             return True
         except (requests.exceptions.HTTPError, Exception) as e:
             if isinstance(e, requests.exceptions.HTTPError):
@@ -121,6 +122,14 @@ def parse_config(config_file):
     config['include_hp_tags'] = parser.getboolean('hpfeeds', 'include_hp_tags')
     config['ignore_cidr'] = parser.get('hpfeeds', 'ignore_cidr')
 
+    config['bhr_host'] = parser.get('bhr', 'bhr_host')
+    config['bhr_ident'] = parser.get('bhr', 'bhr_ident')
+    config['bhr_token'] = parser.get('bhr', 'bhr_token')
+    config['bhr_username'] = parser.get('bhr', 'bhr_username')
+    config['bhr_password'] = parser.get('bhr', 'bhr_password')
+    config['bhr_ssl_no_verify'] = parser.getboolean('bhr', 'bhr_ssl_no_verify')
+    config['bhr_timeout'] = parser.getint('bhr', 'bhr_timeout')
+
     config['bhr_cache_db'] = parser.getint('bhr', 'bhr_cache_db')
     config['bhr_cache_expire'] = parser.getint('bhr', 'bhr_cache_expire')
 
@@ -144,6 +153,14 @@ def main():
     include_hp_tags = config['include_hp_tags']
     ignore_cidr_l = parse_ignore_cidr_option(config['ignore_cidr'])
 
+    bhr_host = config['bhr_host']
+    bhr_ident = config['bhr_ident']
+    bhr_token = config['bhr_token']
+    bhr_username = config['bhr_username']
+    bhr_password = config['bhr_password']
+    bhr_ssl_no_verify = config['bhr_ssl_no_verify']
+    bhr_timeout = config['bhr_timeout']
+
     bhr_cache_db = config['bhr_cache_db']
     bhr_cache_expire = config['bhr_cache_expire']
 
@@ -153,19 +170,10 @@ def main():
 
     logger.info('Configuring BHR')
     try:
-        bhr_host = os.environ["BHR_HOST"]
-        bhr_ident = os.environ.get("BHR_IDENT")
-        bhr_token = os.environ.get("BHR_TOKEN")
-        bhr_username = os.environ.get("BHR_USERNAME")
-        bhr_password = os.environ.get("BHR_PASSWORD")
-        bhr_ssl_no_verify = bool(os.environ.get("BHR_SSL_NO_VERIFY"))
-        bhr_timeout = int(os.environ.get("BHR_TIMEOUT", 3600))
-        # logger.debug('Found BHR environment: Host {} | Ident {} | Token {} | Username {} | Password {} | Verify {} | Timeout {}'.format(bhr_host, bhr_ident, bhr_token,bhr_username, bhr_password,bhr_ssl_no_verify,bhr_timeout))
-        # bhr = bhr_login(bhr_host, bhr_token, bhr_username, bhr_password, bhr_ident, bhr_ssl_no_verify, bhr_timeout)
         logger.debug(
-            'Found BHR environment: Host {} | Token {} | Username {} | Password {} | Verify {} | Timeout {}'.format(
+            'Found BHR environment: Host {} | Ident {} | Token {} | Username {} | Password {} | Verify {} | Timeout {}'.format(
                 bhr_host, bhr_ident, bhr_token, bhr_username, bhr_password, bhr_ssl_no_verify, bhr_timeout))
-        bhr = bhr_login()
+        bhr = bhr_login(bhr_host, bhr_token, bhr_username, bhr_password, bhr_ident, bhr_ssl_no_verify, bhr_timeout)
         logger.info('Configured BHR: {}'.format(repr(bhr.__dict__)))
         logger.debug('Configured BHR Sessions: {}'.format(repr(bhr.s.__dict__)))
     except Exception as e:
