@@ -1,14 +1,22 @@
 import json
 import traceback
-import urlparse
+from urllib.parse import urlparse
 import socket
 import hashlib
 import re
 from IPy import IP
 import logging
+import os
 
-log_format = '%(asctime)s - %(levelname)s::%(message)s'
-logging.basicConfig(level=logging.DEBUG, format=log_format)
+LOG_FORMAT = '%(asctime)s - %(levelname)s - %(name)s[%(lineno)s][%(filename)s] - %(message)s'
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter(LOG_FORMAT))
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
+
+if os.environ.get('DEBUG').upper() == 'TRUE':
+    logger.setLevel(logging.DEBUG)
 
 IPV6_REGEX = re.compile(r'::ffff:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})')
 
@@ -114,7 +122,7 @@ def glastopf_event(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing glastopf event')
+        logger.warning('exception processing glastopf event')
         traceback.print_exc()
         return None
 
@@ -130,7 +138,7 @@ def glastopf_event(identifier, payload):
             # best of luck!
             request_url = dec['request']['url']
     except:
-        logging.warn('exception processing glastopf url, ignoring')
+        logger.warning('exception processing glastopf url, ignoring')
         traceback.print_exc()
 
     tags = []
@@ -159,7 +167,7 @@ def dionaea_capture(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing dionaea event')
+        logger.warning('exception processing dionaea event')
         traceback.print_exc()
         return
 
@@ -191,7 +199,7 @@ def dionaea_connections(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing dionaea connection')
+        logger.warning('exception processing dionaea connection')
         traceback.print_exc()
         return
 
@@ -221,7 +229,7 @@ def beeswarm_hive(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing beeswarm.hive event')
+        logger.warning('exception processing beeswarm.hive event')
         traceback.print_exc()
         return
     return create_message(
@@ -253,7 +261,7 @@ def kippo_cowrie_sessions(identifier, payload, name, channel):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing {} event'.format(name_lower))
+        logger.warning('exception processing {} event'.format(name_lower))
         traceback.print_exc()
         return
 
@@ -336,7 +344,7 @@ def conpot_events(identifier, payload):
         if remote == "127.0.0.1":
             return
     except:
-        logging.warn('exception processing conpot event')
+        logger.warning('exception processing conpot event')
         traceback.print_exc()
         return
 
@@ -365,7 +373,7 @@ def snort_alerts(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing snort alert')
+        logger.warning('exception processing snort alert')
         traceback.print_exc()
         return None
 
@@ -405,7 +413,7 @@ def suricata_events(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing suricata event')
+        logger.warning('exception processing suricata event')
         traceback.print_exc()
         return None
 
@@ -444,7 +452,7 @@ def p0f_events(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing suricata event')
+        logger.warning('exception processing suricata event')
         traceback.print_exc()
         return None
     return create_message(
@@ -471,7 +479,7 @@ def amun_events(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing amun event')
+        logger.warning('exception processing amun event')
         traceback.print_exc()
         return
 
@@ -500,7 +508,7 @@ def wordpot_event(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing wordpot alert')
+        logger.warning('exception processing wordpot alert')
         traceback.print_exc()
         return
 
@@ -530,7 +538,7 @@ def shockpot_event(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing shockpot alert')
+        logger.warning('exception processing shockpot alert')
         traceback.print_exc()
         return None
 
@@ -544,7 +552,7 @@ def shockpot_event(identifier, payload):
             kwargs.update(m.groupdict())
 
     try:
-        p = urlparse.urlparse(dec.url)
+        p = urlparse(dec.url)
         host = p.netloc.split(':')[0]
         socket.inet_aton(host)
         dest_ip = host
@@ -575,7 +583,7 @@ def elastichoney_events(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing elastichoney alert')
+        logger.warning('exception processing elastichoney alert')
         traceback.print_exc()
         return
 
@@ -625,7 +633,7 @@ def rdphoney_sessions(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing amun event')
+        logger.warning('exception processing amun event')
         traceback.print_exc()
         return
 
@@ -656,7 +664,7 @@ def uhp_events(identifier, payload):
     try:
         dec = ezdict(json.loads(str(payload)))
     except:
-        logging.warn('exception processing amun event')
+        logger.warning('exception processing amun event')
         traceback.print_exc()
         return
 
@@ -719,7 +727,7 @@ class HpfeedsMessageProcessor(object):
                     return True
             return False
         except ValueError as e:
-            logging.warn('Received invalid IP via hpfeeds: {}'.format(e))
+            logger.warning('Received invalid IP via hpfeeds: {}'.format(e))
             return True
 
     def geo_intelligence_enrichment(self, messages):
@@ -746,14 +754,17 @@ class HpfeedsMessageProcessor(object):
                     for msg in message:
                         src_ip = msg.get('src_ip')
                         if self.is_ignore_addr(src_ip):
-                            logging.debug('Ignored submission for {}: ignore_cidr_list: {}'.format(src_ip,self.ignore_cidr_list))
+                            logger.debug(
+                                'Ignored submission for {}: ignore_cidr_list: {}'.format(src_ip, self.ignore_cidr_list))
                             continue
                         else:
+                            logger.debug('src_ip NOT on ignore list: {}'.format(src_ip))
                             results.append(msg)
                 else:
                     src_ip = message.get('src_ip')
                     if self.is_ignore_addr(src_ip):
-                        logging.debug('Ignored submission for {}: ignore_cidr_list: {}'.format(src_ip, self.ignore_cidr_list))
+                        logger.debug(
+                            'Ignored submission for {}: ignore_cidr_list: {}'.format(src_ip, self.ignore_cidr_list))
                         continue
                     else:
                         results.append(message)
