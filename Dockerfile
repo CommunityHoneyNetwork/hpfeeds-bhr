@@ -10,8 +10,9 @@ LABEL authoritative-source-url "https://github.com/CommunityHoneyNetwork/hpfeeds
 LABEL changelog-url "https://github.com/CommunityHoneyNetwork/hpfeeds-bhr/commits/master"
 
 COPY requirements.txt /opt/requirements.txt
+ENV DEBIAN_FRONTEND "noninteractive"
 
-RUN apt-get update && apt-get install -y gcc git python3-dev python3-pip
+RUN apt-get update && ap-get upgrade -y && apt-get install -y gcc git python3-dev python3-pip
 RUN pip3 install -r /opt/requirements.txt
 RUN pip3 install git+https://github.com/CommunityHoneyNetwork/hpfeeds3.git
 
