@@ -84,7 +84,6 @@ deploy_dockerhub:
     - stingar
   only:
     - /(^v\d+(.\d+){1,2}(-pre)?$|^latest$)/
-    - sudo ntpdate pool.ntp.org
   script:
     - sudo ntpdate pool.ntp.org
     - sudo docker login -u "gitlab-ci-token" -p "${CI_BUILD_TOKEN}" ${CI_REGISTRY}
