@@ -691,6 +691,40 @@ def uhp_events(identifier, payload):
     )
 
 
+def elasticpot_events(identifier, payload):
+    try:
+        dec = ezdict(json.loads(str(payload)))
+    except:
+        logger.warning('exception processing elasticpot event')
+        traceback.print_exc()
+        return
+
+    tags = []
+    if dec['tags']:
+        tags = dec['tags']
+
+    return create_message(
+        'elasticpot.events',
+        identifier,
+        tags=tags,
+        src_ip=dec.src_ip,
+        dst_ip=dec.dst_ip,
+        src_port=dec.src_port,
+        dst_port=dec.dst_port,
+        vendor_product='elasticpot',
+        app='elasticpot',
+        direction="inbound",
+        ids_type='network',
+        severity='high',
+        signature='Connection to honeypot',
+        eventid=dec.eventid,
+        message=dec.message,
+        url=dec.url,
+        request=dec.request,
+        user_agent=dec.user_agent
+    )
+
+
 PROCESSORS = {
     'amun.events': [amun_events],
     'glastopf.events': [glastopf_event],
@@ -707,7 +741,8 @@ PROCESSORS = {
     'suricata.events': [suricata_events],
     'elastichoney.events': [elastichoney_events],
     'rdphoney.sessions': [rdphoney_sessions],
-    'uhp.events': [uhp_events]
+    'uhp.events': [uhp_events],
+    'elasticpot.events': [elasticpot_events]
 }
 
 

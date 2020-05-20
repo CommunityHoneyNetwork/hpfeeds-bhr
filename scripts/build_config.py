@@ -28,7 +28,7 @@ def main():
     IDENT = os.environ.get("IDENT", "")
     SECRET = os.environ.get("SECRET", "")
     CHANNELS = os.environ.get("CHANNELS",
-                              "amun.events,conpot.events,thug.events,beeswarm.hive,dionaea.capture,dionaea.connections,thug.files,beeswarm.feeder,cuckoo.analysis,kippo.sessions,cowrie.sessions,glastopf.events,glastopf.files,mwbinary.dionaea.sensorunique,snort.alerts,wordpot.events,p0f.events,suricata.events,shockpot.events,elastichoney.events,rdphoney.sessions,uhp.events")
+                              "amun.events,conpot.events,thug.events,beeswarm.hive,dionaea.capture,dionaea.connections,thug.files,beeswarm.feeder,cuckoo.analysis,kippo.sessions,cowrie.sessions,glastopf.events,glastopf.files,mwbinary.dionaea.sensorunique,snort.alerts,wordpot.events,p0f.events,suricata.events,shockpot.events,elastichoney.events,rdphoney.sessions,uhp.events,elasticpot.events")
     INCLUDE_HP_TAGS = os.environ.get("INCLUDE_HP_TAGS", "false")
     IGNORE_CIDR = os.environ.get("IGNORE_CIDR", "false")
 
