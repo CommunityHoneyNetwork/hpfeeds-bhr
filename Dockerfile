@@ -11,11 +11,17 @@ LABEL changelog-url "https://github.com/CommunityHoneyNetwork/hpfeeds-bhr/commit
 
 COPY requirements.txt /opt/requirements.txt
 ENV DEBIAN_FRONTEND "noninteractive"
-# hadolint ignore=DL3008,DL3005
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y gcc git python3-dev python3-pip
-RUN pip3 install -r /opt/requirements.txt
-RUN pip3 install git+https://github.com/CommunityHoneyNetwork/hpfeeds3.git
+# hadolint ignore=DL3008,DL3005
+RUN apt-get update \
+  && apt-get upgrade -y \
+  && apt-get install --no-install-recommends -y gcc git python3-dev python3-pip \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN python3 -m pip install --upgrade pip setuptools wheel \
+  && python3 -m pip install -r /opt/requirements.txt \
+  && python3 -m pip install git+https://github.com/CommunityHoneyNetwork/hpfeeds3.git
 
 ADD . /opt/
 RUN chmod 755 /opt/entrypoint.sh
