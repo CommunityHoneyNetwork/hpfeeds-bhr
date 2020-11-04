@@ -724,6 +724,45 @@ def elasticpot_events(identifier, payload):
         user_agent=dec.user_agent
     )
 
+def ssh_auth_logger_events(identifier, payload):
+    try:
+        dec = ezdict(json.loads(str(payload)))
+    except:
+        logger.warning('exception processing ssh-auth-logger event')
+        traceback.print_exc()
+        return
+
+    tags = []
+    if dec['tags']:
+        tags = dec['tags']
+
+    base_message = create_message(
+        'ssh-auth-logger',
+        identifier,
+        tags=tags,
+        src_ip=dec.src_ip,
+        dst_ip=dec.dst_ip,
+        src_port=dec.src_port,
+        dst_port=dec.dst_port,
+        vendor_product='ssh-auth-logger',
+        app='ssh-auth-logger',
+        direction='inbound',
+        ids_type='network',
+        severity='high',
+        signature='Connection to honeypot',
+        ssh_username=dec.duser
+    )
+
+    if dec.fingerprint:
+        base_message['ssh_fingerprint'] = dec.fingerprint
+        base_message['keytype'] = dec.keytype
+        base_message['signature'] = 'SSH login attempted on ssh-auth-logger honeypot with key'
+    elif dec.password:
+        base_message['ssh_password'] = dec.password
+        base_message['signature'] = 'SSH login attempted on ssh-auth-logger honeypot with password'
+
+
+    return base_message
 
 PROCESSORS = {
     'amun.events': [amun_events],
@@ -742,7 +781,8 @@ PROCESSORS = {
     'elastichoney.events': [elastichoney_events],
     'rdphoney.sessions': [rdphoney_sessions],
     'uhp.events': [uhp_events],
-    'elasticpot.events': [elasticpot_events]
+    'elasticpot.events': [elasticpot_events],
+    'ssh-auth-logger.events': [ssh_auth_logger_events]
 }
 
 
