@@ -740,16 +740,16 @@ def ssh_auth_logger_events(identifier, payload):
         'ssh-auth-logger',
         identifier,
         tags=tags,
-        src_ip=dec.src_ip,
-        dst_ip=dec.dst_ip,
-        src_port=dec.src_port,
-        dst_port=dec.dst_port,
+        src_ip=dec.src,
+        dst_ip=dec.dst,
+        src_port=dec.spt,
+        dst_port=dec.dpt,
         vendor_product='ssh-auth-logger',
         app='ssh-auth-logger',
         direction='inbound',
         ids_type='network',
         severity='high',
-        signature='Connection to honeypot',
+        signature='Connection to Honeypot',
         ssh_username=dec.duser
     )
 
