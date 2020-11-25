@@ -1,13 +1,13 @@
 FROM python:3.7
 
-LABEL maintainer Team STINGAR <team-stingar@duke.edu>
-LABEL name "hpfeeds-bhr"
-LABEL version "1.9"
-LABEL release "1"
-LABEL summary "HPFeeds BHR handler"
-LABEL description "HPFeeds BHR handler is a tool for submitting black hole routes from honeypot events."
-LABEL authoritative-source-url "https://github.com/CommunityHoneyNetwork/hpfeeds-bhr"
-LABEL changelog-url "https://github.com/CommunityHoneyNetwork/hpfeeds-bhr/commits/master"
+LABEL maintainer="Team Stingar <team-stingar@duke.edu>"
+LABEL name="hpfeeds-bhr"
+LABEL version="1.9.1"
+LABEL release="1"
+LABEL summary="HPFeeds BHR handler"
+LABEL description="HPFeeds BHR handler is a tool for submitting black hole routes from honeypot events."
+LABEL authoritative-source-url="https://github.com/CommunityHoneyNetwork/hpfeeds-bhr"
+LABEL changelog-url="https://github.com/CommunityHoneyNetwork/hpfeeds-bhr/commits/master"
 
 COPY requirements.txt /opt/requirements.txt
 ENV DEBIAN_FRONTEND "noninteractive"
